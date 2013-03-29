@@ -1,6 +1,7 @@
 require 'pi_piper'
 require 'json'
 require 'open-uri'
+require 'date'
 
 class SearchesTweets
   attr_reader :q
@@ -30,7 +31,7 @@ class ToggleHandler
   attr_accessor :last_tweet_id, :count
   attr_reader :pin
   def initialize
-    @last_tweet_id = nil
+    @last_tweet_time = Date.parse('1900-01-01')
     @count = 0
     @pin = PiPiper::Pin.new(pin: 15, direction: :out)
   end
@@ -39,10 +40,11 @@ class ToggleHandler
     SearchesTweets.new('isotopeled').search do |tweets|
       tweet = tweets[0]
       if(tweet)
-        if(tweet["id_str"] != last_tweet_id)
+        tweet_time = Date.parse(tweet["created_at"])
+        if(tweet_time > last_tweet_time)
           STDOUT.puts count
           STDOUT.puts tweet.inspect
-          @last_tweet_id = tweet["id_str"]
+          @last_tweet_time = tweet_time
           @count += 1
           count.even? ? pin.on : pin.off
         end
