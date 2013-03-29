@@ -41,9 +41,15 @@ class ToggleHandler
       tweet = tweets[0]
       if(tweet)
         tweet_time = Date.parse(tweet["created_at"])
-        STDOUT.puts tweet.inspect
-        STDOUT.puts tweet_time
+        puts "-----------"
+        puts "last_tweet_time: #{last_tweet_time}"
+        puts tweet.inspect
+        puts "tweet_time: #{tweet_time}"
+        puts tweet_time > last_tweet_time
+        puts "-----------"
         if(tweet_time > last_tweet_time)
+          puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+          puts "toggling"
           STDOUT.puts count
           STDOUT.puts tweet.inspect
           @last_tweet_time = tweet_time
