@@ -28,7 +28,7 @@ class SearchesTweets
 end
 
 class ToggleHandler
-  attr_accessor :last_tweet_id, :count
+  attr_accessor :last_tweet_time, :count
   attr_reader :pin
   def initialize
     @last_tweet_time = Date.parse('1900-01-01')
