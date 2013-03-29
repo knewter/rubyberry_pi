@@ -41,6 +41,8 @@ class ToggleHandler
       tweet = tweets[0]
       if(tweet)
         tweet_time = Date.parse(tweet["created_at"])
+        STDOUT.puts tweet.inspect
+        STDOUT.puts tweet_time
         if(tweet_time > last_tweet_time)
           STDOUT.puts count
           STDOUT.puts tweet.inspect
