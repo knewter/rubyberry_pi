@@ -38,6 +38,7 @@ class ToggleHandler
   def toggle_on_search
     SearchesTweets.new('isotopeled').search do |tweets|
       tweet = tweets[0]
+      tweet_time = Time.parse(tweet["created_at"])
       if(tweet)
         if(tweet_time > last_tweet_time)
           log_tweet(tweet, tweet_time)
