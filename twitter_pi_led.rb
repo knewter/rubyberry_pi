@@ -32,7 +32,7 @@ class ToggleHandler
   end
 
   def toggle_on_search
-    SearchesTweets.new('knewter').search do |tweets|
+    SearchesTweets.new('isotopeled').search do |tweets|
       tweet = tweets[0]
       if(tweet["id_str"] != last_tweet_id)
         STDOUT.puts count
