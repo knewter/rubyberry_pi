@@ -17,7 +17,6 @@ class SearchesTweets
   def search(&block)
     begin
       open(url) do |f|
-        STDOUT.puts 'in'
         tweets = JSON.parse(f.read)
         yield tweets["results"]
       end
@@ -40,24 +39,29 @@ class ToggleHandler
     SearchesTweets.new('isotopeled').search do |tweets|
       tweet = tweets[0]
       if(tweet)
-        tweet_time = Time.parse(tweet["created_at"])
-        puts "-----------"
-        puts "last_tweet_time: #{last_tweet_time}"
-        puts tweet.inspect
-        puts "tweet_time: #{tweet_time}"
-        puts tweet_time > last_tweet_time
-        puts "-----------"
         if(tweet_time > last_tweet_time)
-          puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-          puts "toggling"
-          STDOUT.puts count
-          STDOUT.puts tweet.inspect
-          @last_tweet_time = tweet_time
-          @count += 1
-          count.even? ? pin.on : pin.off
+          log_tweet(tweet, tweet_time)
+          store_new_tweet(tweet_time)
+          toggle_pin(tweet)
         end
       end
     end
+  end
+
+  def log_tweet(tweet, tweet_time)
+    puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    puts "tweet_time: #{tweet_time}"
+    puts tweet.inspect
+  end
+
+  def toggle_pin(tweet)
+    text = tweet["text"]
+    text =~ /on/ ? pin.on : pin.off
+  end
+
+  def store_new_tweet(tweet_time)
+    @last_tweet_time = tweet_time
+    @count += 1
   end
 
   def watch
