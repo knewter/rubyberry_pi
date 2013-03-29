@@ -31,7 +31,7 @@ class ToggleHandler
   attr_accessor :last_tweet_time, :count
   attr_reader :pin
   def initialize
-    @last_tweet_time = Date.parse('1900-01-01')
+    @last_tweet_time = Time.parse('1900-01-01')
     @count = 0
     @pin = PiPiper::Pin.new(pin: 15, direction: :out)
   end
@@ -40,7 +40,7 @@ class ToggleHandler
     SearchesTweets.new('isotopeled').search do |tweets|
       tweet = tweets[0]
       if(tweet)
-        tweet_time = Date.parse(tweet["created_at"])
+        tweet_time = Time.parse(tweet["created_at"])
         puts "-----------"
         puts "last_tweet_time: #{last_tweet_time}"
         puts tweet.inspect
