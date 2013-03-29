@@ -14,10 +14,14 @@ class SearchesTweets
   end
 
   def search(&block)
-    open(url) do |f|
-      STDOUT.puts 'in'
-      tweets = JSON.parse(f.read)
-      yield tweets["results"]
+    begin
+      open(url) do |f|
+        STDOUT.puts 'in'
+        tweets = JSON.parse(f.read)
+        yield tweets["results"]
+      end
+    rescue OpenURI::HTTPError
+      STDOUT.puts "hey there was a 503.  We're cool guys.  Carry on."
     end
   end
 end
@@ -38,7 +42,7 @@ class ToggleHandler
         if(tweet["id_str"] != last_tweet_id)
           STDOUT.puts count
           STDOUT.puts tweet.inspect
-          last_tweet_id = tweet["id_str"]
+          @last_tweet_id = tweet["id_str"]
           @count += 1
           count.even? ? pin.on : pin.off
         end
