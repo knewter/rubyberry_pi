@@ -2,8 +2,6 @@ require 'pi_piper'
 require 'json'
 require 'open-uri'
 
-pin = PiPiper::Pin.new(pin: 15, direction: :out)
-
 class SearchesTweets
   attr_reader :q
 
@@ -26,9 +24,11 @@ end
 
 class ToggleHandler
   attr_accessor :last_tweet_id, :count
+  attr_reader :pin
   def initialize
     @last_tweet_id = nil
     @count = 0
+    @pin = PiPiper::Pin.new(pin: 15, direction: :out)
   end
 
   def toggle_on_search
