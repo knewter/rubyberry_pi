@@ -1,20 +1,57 @@
 require 'pi_piper'
-require 'twitter/json_stream'
+require 'json'
+require 'open-uri'
 
 pin = PiPiper::Pin.new(pin: 15, direction: :out)
-times = 0
 
-EventMachine::run {
-  stream = Twitter::JSONStream.connect(
-    path: '/1/statuses/filter.json',
-    auth: 'isotopeled:isotope11_bang',
-    method: 'POST',
-    content: 'track=isotope11led'
-  )
+class SearchesTweets
+  attr_reader :q
 
-  stream.each_item do |item|
-    $stdout.print "item: #{item}"
-    times += 1
-    times.even? ? pin.on : pin.off
+  def initialize(q)
+    @q = q
   end
-}
+
+  def url
+    "http://search.twitter.com/search.json?q=#{q}"
+  end
+
+  def search(&block)
+    open(url) do |f|
+      STDOUT.puts 'in'
+      tweets = JSON.parse(f.read)
+      yield tweets["results"]
+    end
+  end
+end
+
+class ToggleHandler
+  attr_accessor :last_tweet_id, :count
+  def initialize
+    @last_tweet_id = nil
+    @count = 0
+  end
+
+  def toggle_on_search
+    SearchesTweets.new('knewter').search do |tweets|
+      tweet = tweets[0]
+      if(tweet["id_str"] != last_tweet_id)
+        STDOUT.puts count
+        STDOUT.puts tweet.inspect
+        last_tweet_id = tweet["idstr"]
+        @count += 1
+        count.even? ? pin.on : pin.off
+      end
+    end
+  end
+
+  def watch
+    while(true) do
+      toggle_on_search
+      sleep 1
+    end
+  end
+end
+
+trap(:INT){ exit }
+
+ToggleHandler.new.watch
