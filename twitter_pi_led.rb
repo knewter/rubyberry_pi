@@ -17,8 +17,12 @@ class SearchesTweets
   def search(&block)
     begin
       open(url) do |f|
+begin
         tweets = JSON.parse(f.read)
         yield tweets["results"]
+rescue
+[]
+end
       end
     rescue OpenURI::HTTPError
       STDOUT.puts "hey there was a 503.  We're cool guys.  Carry on."
