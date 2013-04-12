@@ -43,6 +43,13 @@ class RGBLed
     "echo #{get_pin(channel)}=#{get_intensity(channel)} > /dev/pi-blaster"
   end
 
+  def pi_blast
+    %w(red green blue).each do |c|
+puts pi_blast_command(c)
+      `#{pi_blast_command(c)}`
+    end
+  end
+
   private
   def fetch_option(channel)
     @options.fetch(channel)  { raise "Must specify `#{channel.to_s}` option." }
@@ -51,6 +58,8 @@ class RGBLed
   def set_intensity(channel, value)
     validate_channel(channel)
     validate_intensity(value)
+STDOUT.puts channel
+STDOUT.puts value
     @intensity[channel.to_sym] = value
   end
 
