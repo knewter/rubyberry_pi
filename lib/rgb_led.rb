@@ -3,9 +3,11 @@ class OutOfRangeException < StandardError; end
 class RGBLed
   def initialize(options={})
     @options   = options
-    @red_pin   = fetch_option(:red_pin)
-    @green_pin = fetch_option(:green_pin)
-    @blue_pin  = fetch_option(:blue_pin)
+    @pins = {
+      red:   fetch_option(:red_pin),
+      green: fetch_option(:green_pin),
+      blue:  fetch_option(:blue_pin)
+    }
     @intensity = {
       red:   0,
       green: 0,
@@ -21,25 +23,50 @@ class RGBLed
     get_intensity(:red)
   end
 
+  def green=(value)
+    set_intensity(:green, value)
+  end
+
+  def green
+    get_intensity(:green)
+  end
+
+  def blue=(value)
+    set_intensity(:blue, value)
+  end
+
+  def blue
+    get_intensity(:blue)
+  end
+
+  def pi_blast_command(channel)
+    "echo #{get_pin(channel)}=#{get_intensity(channel)} > /dev/pi-blaster"
+  end
+
   private
-  def fetch_option(name)
-    @options.fetch(name)  { raise "Must specify `#{name.to_s}` option." }
+  def fetch_option(channel)
+    @options.fetch(channel)  { raise "Must specify `#{channel.to_s}` option." }
   end
 
-  def set_intensity(name, value)
-    validate_name(name)
+  def set_intensity(channel, value)
+    validate_channel(channel)
     validate_intensity(value)
-    @intensity[name.to_sym] = value
+    @intensity[channel.to_sym] = value
   end
 
-  def get_intensity(name)
-    validate_name(name)
-    @intensity[name.to_sym]
+  def get_intensity(channel)
+    validate_channel(channel)
+    @intensity[channel.to_sym]
   end
 
-  def validate_name(name)
-    return true if valid_names.include?(name.to_s)
-    raise "Invalid attribute name: #{name}"
+  def get_pin(channel)
+    validate_channel(channel)
+    @pins[channel.to_sym]
+  end
+
+  def validate_channel(channel)
+    return true if valid_channels.include?(channel.to_s)
+    raise "Invalid attribute channel: #{channel}"
   end
 
   def validate_intensity(intensity)
@@ -47,7 +74,7 @@ class RGBLed
     raise OutOfRangeException, "Invalid intensity: #{intensity}"
   end
 
-  def valid_names
+  def valid_channels
     %w(red green blue)
   end
 
